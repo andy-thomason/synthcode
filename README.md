@@ -13,10 +13,13 @@ defers the definition of a class to the .cpp or .cc file.
 The result is typically about 100x speedup in builds anything up to 50% code size reduction
 and 25% performance increase over traditional builds.
 
+Contarary to popular opinion single module builds may also build faster when only a single
+class is changed, especially in debug builds.
+
 The Python script
 -----------------
 
-Synthcode constructs a prgogram of arbitrary size which can then be compiled with CMake.
+Synthcode constructs a program of arbitrary size which can then be compiled with CMake.
 
 The python script has two parameters the first of which is "s" or "m" for single
 or multimodule builds and the second is the number of classes that will be generated.
