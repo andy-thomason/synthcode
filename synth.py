@@ -1,23 +1,33 @@
 #!/usr/bin/python
 
 import sys
+import os
 import random
 
 random.seed(1)
 
 if len(sys.argv) < 3:
-  print("usage: synth.py s|m num_classes")
+  print("usage: synth.py s|m num_classes\n")
+  print("eg. synth.py s 100  builds a single module 100 class project")
+  print("    synth.py m 1000 builds a multi module 1000 class project")
   sys,exit(1)
 
 single_module = sys.argv[1] == 's'
 numclasses = int(sys.argv[2])
+
+dirname = "proj_%s_%s" % (sys.argv[1], sys.argv[2])
+
+try:
+  os.mkdir(dirname)
+except:
+  pass
 
 if single_module:
   cxx = ""
 else:
   cxx = " ".join(["c%d" % i for i in range(numclasses)])
 
-with open("CMakeLists.txt", "wb") as f:
+with open(dirname + "/CMakeLists.txt", "wb") as f:
   f.write("""
 cmake_minimum_required (VERSION 2.6)
 project(synthcode)
@@ -27,7 +37,7 @@ add_executable(synthcode main.cpp %s)
 
 
 for i in range(numclasses):
-  with open("c%d.hpp" % i, "wb") as f:
+  with open(dirname + "/c%d.hpp" % i, "wb") as f:
     f.write("#ifndef INCLUDED_C%d_HPP_\n" % i);
     f.write("#define INCLUDED_C%d_HPP_\n" % i);
 
@@ -75,7 +85,7 @@ public:
     f.write("#endif\n")
 
   if not single_module:
-    with open("c%d.cpp" % i, "wb") as f:
+    with open(dirname + "/c%d.cpp" % i, "wb") as f:
       f.write('#include "c%d.hpp"\n' % i)
       f.write("void c%d::f1() {\n" % i);
       for c in used:
@@ -85,7 +95,7 @@ public:
       
 
 
-with open("main.cpp", "wb") as f:
+with open(dirname + "/main.cpp", "wb") as f:
   for i in range(numclasses):
     f.write('#include "c%d.hpp"\n' % i)
 
